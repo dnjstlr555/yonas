@@ -117,7 +117,15 @@ function write_listMain()
 	var stringBuf = "";
 
 	// 디렉터리
-	copiedDA.sort(function(A, B) { return A[0].toLowerCase().localeCompare(B[0].toLowerCase()); });
+	copiedDA.sort(function(A, B) 
+	{ 
+	//alert(A[0].split(".")[0].toLowerCase() + " " +  B[0].split(".")[0].toLowerCase() + " isnan " + isNaN(A[0].split(".")[0]))
+		if(!isNaN(A[0].split(".")[0]) && !isNaN(B[0].split(".")[0])) {
+			//alert( A[0].split(".")[0] - B[0].split(".")[0] ) 
+			return A[0].split(".")[0] - B[0].split(".")[0]
+		}
+		return A[0].split(".")[0].toLowerCase().localeCompare(B[0].split(".")[0].toLowerCase()); 
+	});
 
 	for(var i=0, len=dirCount; i<len; i++)
 	{
@@ -136,9 +144,16 @@ function write_listMain()
 		"	<div id='namediv#" + copiedDA[i][1] + "' class='img_name text-cut'>" + copiedDA[i][0] + "</div>  </div>" +
 		"</div></h1>\n";
 	}
-
+	
 	// 파일
-	copiedFA.sort(function(A, B) { return A[0].toLowerCase().localeCompare(B[0].toLowerCase()); });
+	copiedFA.sort(function(A, B) {
+		//alert(A[0].split(".")[0].toLowerCase() + " " +  B[0].split(".")[0].toLowerCase() + " isnan " + isNaN(A[0].split(".")[0]))
+		if(!isNaN(A[0].split(".")[0]) && !isNaN(B[0].split(".")[0])) {
+			//alert( A[0].split(".")[0] - B[0].split(".")[0] ) 
+			return A[0].split(".")[0] - B[0].split(".")[0]
+		}
+		return A[0].split(".")[0].toLowerCase().localeCompare(B[0].split(".")[0].toLowerCase()); 
+		});
 
 	var imgf = /\.(bmp|gif|jpe|jpg|jpeg|png)$/i;
 	var vidf = /\.(3g2|3gp|3gp2|3gpp|asf|avi|divx|flv|k3g|m1v|m2t|m2ts|m2v|m4v|mkv|mov|mp2v|mp4|mpv2|mpg|mpeg|ogm|ogv|qt|rmvb|tp|ts|webm|wm|wmv)$/i;
