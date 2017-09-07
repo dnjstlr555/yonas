@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<title>Berryz WebShare</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="ViewPort" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<style type="text/css">
+* { font-family: "Segoe UI", "Meiryo UI", "Malgun Gothic", "Arial", "Dotum", "AppleGothic", "Sans-Serif"; }
+
+html, body { width: 100%; height: 100%; margin: 0; padding: 0; font-size: 12px; line-height: 100%; }
+body { background: #f1f1f1; }
+
+a { color: #000; text-decoration: none; }
+a:hover { color: #888; text-decoration: none; }
+
+img { border: none; }
+form { margin: 0; padding: 0; }
+div, span { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+
+input { padding: 3px; font-size: 12px; }
+input.text { float: left; position: absolute; left: 0; top: 0; width: 70%; height: 23px; color: #999; }
+input.button { float: right; width: 76px; height: 23px; }
+
+#wrap { width: 100%; height: 100%; }
+</style>
+</head>
+
+<body oncontextmenu="return false;" onkeydown="return false;" onkeyup="return false;">
+
+<div id="wrap">
+	<form method="post" name="uploadForm" enctype="multipart/form-data">
+		<input type="file" id="file0" name="uploadfile" class="text" onchange="onAddUpload(this);" multiple />
+		<input type="image" src="images/btn_upload.png?action=SkinFile" class="button" alt="Upload" onclick="return onUpload();" />
+	</form>
+</div>
+
+<script type="text/javascript">
+var urlPath = document.URL.split("?action=SkinFile#path=")[1];
+var randKey = "["+Math.random()+"]";
+var feCount = 0;
+
+if(self == top || parent.document.domain != document.domain)
+{
+	alert("올바르지 않은 접근입니다.");
+	top.close();
+	location.replace("about:blank");
+}
+
+document.uploadForm.action = urlPath+"?action=Upload&key="+randKey;
+
+// http://kldp.net/snippet/detail.php?type=snippet&id=43
+String.prototype.trim = function()
+{
+	var pattern = !arguments[0] ? /^\s+|\s+$/g : new RegExp("^["+arguments[0]+"]+|["+arguments[0]+"]+$", "g");
+	return this.replace(pattern, "");
+}
+
+// 업로드 대기열 추가
+function onAddUpload(fe)
+{
+	if(fe.value)
+	{
+		if(document.uploadForm.uploadfile.length > 10)
+		{
+			fe.value = "";
+			alert("대기열은 10개까지 추가 가능합니다.");
+
+			return false;
+		}
+
+		var feX = fe.cloneNode();
+
+		fe.style.visibility = "hidden";
+		document.uploadForm.appendChild(feX);
+
+		feX.id    = "file"+(feCount+1);
+		feX.value = "";
+
+		parent.document.getElementById("uploadList").innerHTML += "<a class='queue' title='"+fe.value+"' onclick=\"document.getElementById('uploadFrame').contentWindow.onRemoveUpload('file"+feCount+"',this);\">★</a> ";
+		feCount++;
+	}
+}
+
+// 업로드 대기열 제거
+function onRemoveUpload(fe, fq)
+{
+	if(confirm("다음 항목을 대기열에서 제거하시겠습니까?\n\n" + fq.getAttribute("title")))
+	{
+		parent.document.getElementById('uploadList').removeChild(fq);
+		document.uploadForm.removeChild(document.getElementById(fe));
+	}
+}
+
+// 업로드 검사
+function onUpload()
+{
+	var frm = document.uploadForm;
+	var ptn = new RegExp(".*[\\\\/]", "g");
+
+	if(frm.uploadfile.length)
+	{
+		for(var i=0, len=frm.uploadfile.length; i<len; i++)
+		{
+			var localPath = frm.uploadfile.item(i).value;
+
+			if(localPath.trim() != "")
+			{
+				var filename = localPath.replace(ptn, "");
+
+				parent.onBeginUpload(filename, randKey);
+				return true;
+			}
+		}
+
+		alert("업로드할 파일을 선택하세요.");
+		return false;
+	}
+	else
+	{
+		var localPath = frm.uploadfile.value;
+
+		if(localPath.trim() == "")
+		{
+			alert("업로드할 파일을 선택하세요.");
+			return false;
+		}
+		else
+		{
+			var filename = localPath.replace(ptn, "");
+
+			parent.onBeginUpload(filename, randKey);
+			return true;
+		}
+	}
+}
+</script>
+
+</body>
+</html>

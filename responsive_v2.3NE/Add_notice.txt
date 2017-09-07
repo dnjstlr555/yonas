@@ -1,0 +1,124 @@
+responsive v2.3 NE 스킨용 기본 공지사항 템플릿
+==============================================
+
+개요
+    간단한 레이어 공지사항을 띄웁니다.
+    개인적으로 필요성을 느끼지 못해 기본으로 적용하지 않고 굳이 별첨합니다.
+    보시다시피 바로 쓸 수 있는 복붙용이라서 소스가 더럽고, 대충 만들어서 별다른 디테일 처리도 없습니다.
+
+    닫기 버튼과 하루 안보기 버튼이 있습니다.
+    하루 안보기는 접속자 쿠키를 사용하므로 날짜가 만료되거나 쿠키를 삭제하면 다시 뜹니다.
+
+    덧붙여서, 이 공지사항 템플릿 및 기초적인 HTML 관련 문의는 받지 않습니다.
+
+
+
+사용 방법
+    스킨의 index.html 파일을 메모장으로 열고 <body> 바로 아랫줄에 다음의 템플릿 #1 또는 #2 부분의 태그를 복사, 붙여넣습니다.
+
+    #1: 흔한 박스형 팝업 레이어 스타일   /   #2: 전체 화면 오버레이 스타일
+    (둘 다 복사하면 충돌해서 오류 발생합니다.)
+
+    공지 내용이 들어갈 부분을 수정 후 index.html 파일 내용을 저장하고 Berryz WebShare 종료 및 재실행합니다.
+    프로그램 특성 상 웹브라우저 임시 파일(캐시)을 비우지 않으면 갱신 확인이 잘 안될 수 있습니다.
+
+
+
+<!-- 기본 공지사항 템플릿 #1 시작 -->
+<style type="text/css">
+#noticeWrap { display: none; position: absolute; z-index: 65000; left: 20px; top: 20px; width: 280px; background: #fff; box-shadow:0 0 6px #999; cursor: default; }
+#noticeWrap img { max-width: 100%; }
+#noticeWrap .ntop  { width: 100%; height: 30px; color:#fff; background: #69f; padding: 8px 10px; font-weight:bold; }
+#noticeWrap .nline { width: 100%; font-size: 0; clear:both; }
+#noticeWrap .ncont { padding: 10px; font-size: 14px; line-height: 28px; }
+#noticeWrap .nbtm  { width: 100%; height: 40px; color: #000; background: #f0f0f0; padding: 14px 10px; text-align: center; }
+#noticeWrap .nbtm span { background: #e0e0e0; border: 1px solid #adadad; padding: 4px 16px; cursor: pointer; }
+</style>
+
+<div id="noticeWrap">
+	<div class="ntop">
+		<div style="float:left;text-align:left;">서버 공지사항</div>
+		<div style="float:right;text-align:right;cursor:pointer;" onclick="ToggleNotice(1);">Ｘ</div>
+	</div>
+	<div class="nline" style="height:0;"></div>
+	<div class="ncont">
+
+Hi, Dude !<br />
+여기에 공지 내용을 입력합니다.<br />
+<br />
+줄바꿈을 하려면 줄 끝에 <b>&lt;br /&gt;</b> 태그를 넣으면 됩니다.<br />
+너무 길게 쓰거나 크기(가로 260px)를 벗어나는 이미지, 테이블 등을 삽입하면 모바일 화면에서 부분적으로 안보이게 되니 유의하시기 바랍니다.<br />
+<span style="color:#ccc;"><s>그러니까 용건만 간단히!</s></span><br />
+<br />
+<b>- Berryz WebShare -</b><br />
+
+	</div>
+	<div class="nline" style="height:1px;background:#ddd;"></div>
+	<div class="nbtm">
+		<span onclick="ToggleNotice(2);">오늘은 그만 보기</span>
+	</div>
+</div>
+
+<script type="text/javascript">
+function ToggleNotice(flag)
+{
+	var useNotice = 1; // 공지사항 사용 여부 (1: 사용, 0: 사용 안함)
+	var nDiv = document.getElementById("noticeWrap"), nFlg = (document.cookie.indexOf("notice_flag=1") == -1);
+
+	if(flag==1){nDiv.style.display="none";}else if(flag==2){var todayDate=new Date();todayDate.setDate(todayDate.getDate()+1);document.cookie="notice_flag=1;path=/;expires="+todayDate.toGMTString()+";";ToggleNotice(1);}else{if(useNotice && nFlg){nDiv.style.display="block";}}
+}
+
+ToggleNotice();
+</script>
+<!-- 기본 공지사항 #1 템플릿 끝 -->
+
+
+
+<!-- 기본 공지사항 #2 템플릿 시작 -->
+<style type="text/css">
+#noticeWrap { display: none; position: fixed; z-index: 65000; left: 0; top: 0; width: 100%; height: 100%; color: #fff; background: #000; text-align: center; cursor: default; opacity: 0.85; filter:alpha(opacity=85); }
+#noticeWrap img { max-width: 100%; }
+#noticeWrap .ntop  { width: 100%; max-width: 960px; margin: 3% auto 0; padding: 20px 10px 30px; font-size: 20px; font-weight: bold; }
+#noticeWrap .nline { width: 100%; height: 1px; background: #098; font-size: 0; box-shadow: 0 0 10px #4fe; clear: both; }
+#noticeWrap .ncont { width: 100%; max-width: 960px; height: 38%; margin: 20px auto; padding: 0 15px; font-size: 14px; text-align: left; line-height: 26px; overflow-y: auto; }
+#noticeWrap .nbtm  { width: 100%; max-width: 960px; margin: 0 auto; padding: 20px 10px; font-size: 20px; font-weight: bold; text-align: center; }
+</style>
+
+<div id="noticeWrap">
+	<div class="ntop">
+		<span style="float:left;text-align:left;">서버 공지사항</span>
+		<span style="float:right;text-align:right;cursor:pointer;" onclick="ToggleNotice(1);">Ｘ</span>
+	</div>
+	<div class="nline"></div>
+	<div class="ncont">
+
+Hi, Dude !<br />
+여기에 공지 내용을 입력합니다.<br />
+<br />
+줄바꿈을 하려면 줄 끝에 <b>&lt;br /&gt;</b> 태그를 넣으면 됩니다.<br />
+이미지 태그(&lt;img src="주소" /&gt;)로 크고 아름다운 사진을 띄우면 이 박스 너비에 맞게 자동 리사이징됩니다.<br />
+내용이 길 경우 내용 영역에 스크롤바가 생성되고, 스크롤해서 볼 수 있습니다.<br />
+<br />
+<span style="color:#ccc;"><s>하지만 글이 길면 다들 난독증을 호소하겠지...</s></span><br />
+<br />
+<b>- Berryz WebShare -</b><br />
+
+	</div>
+	<div class="nline"></div>
+	<div class="nbtm">
+		<span style="cursor:pointer;" onclick="ToggleNotice(2);">[ 오늘은 그만 보기 ]</span>
+	</div>
+</div>
+
+<script type="text/javascript">
+function ToggleNotice(flag)
+{
+	var useNotice = 1; // 공지사항 사용 여부 (1: 사용, 0: 사용 안함)
+	var nDiv = document.getElementById("noticeWrap"), nFlg = (document.cookie.indexOf("notice_flag=1") == -1);
+
+	if(flag==1){nDiv.style.display="none";}else if(flag==2){var todayDate=new Date();todayDate.setDate(todayDate.getDate()+1);document.cookie="notice_flag=1;path=/;expires="+todayDate.toGMTString()+";";ToggleNotice(1);}else{if(useNotice && nFlg){nDiv.style.display="block";}}
+}
+
+ToggleNotice();
+</script>
+<!-- 기본 공지사항 #2 템플릿 끝 -->

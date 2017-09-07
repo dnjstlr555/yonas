@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<title>YONAS</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="ViewPort" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="Robots" content="noindex, nofollow" />
+<link rel="Shortcut Icon" type="image/x-icon"  href="/$skin/favicon.ico?action=SkinFile" />
+<link rel="StyleSheet" type="text/css" media="all" href="//fonts.googleapis.com/icon?family=Material+Icons" />
+<link rel="StyleSheet" type="text/css" media="all" href="/$skin/css/global.css?action=SkinFile" />
+</head>
+
+<body>
+
+<div id="loading"><!--[If gte IE 9]><!--><i class="material-icons">&#xE863;</i><!--<![EndIf]--></div>
+
+<div id="wrap">
+	<div id="header">
+		<div class="inner-wrap width">
+			<div id="logo">
+				<h1 class="text-cut">
+					<a href="/">Berryz WebShare</a>&nbsp;
+					<span onclick="scrollTo(0,0);">요시카 수정판</span>
+				</h1>
+			</div>
+			<div id="nav" onclick="ToggleMenu();">
+				<div>{ &nbsp; side menu &nbsp; }</div>
+				<ul>
+					<!-- Login -->
+					#if($current_login_id)
+					<li><a href="/?action=Logout" title="$current_login_id"><i class="material-icons">&#xE899;</i>Logout</a></li>
+					#else
+					<li><a href="?action=Login"><i class="material-icons">&#xE0DA;</i>Login</a></li>
+					#end
+					<!-- File operation -->
+					#if($upload_path)
+					<li onclick="onMkdir();return false;"><a href="#mkdir"><i class="material-icons">&#xE2CC;</i>New Folder</a></li>
+					<li onclick="onUpload('$skin','$upload_path');return false;"><a href="#upload"><i class="material-icons">&#xE2C6;</i>Upload</a></li>
+					<li onclick="onPlugin('Delete');return false;"><a href="#del"><i class="material-icons">&#xE872;</i>Delete</a></li>
+					<li onclick="onPlugin('Rename');return false;"><a href="#ren"><i class="material-icons">&#xE254;</i>Rename</a></li>
+					#end
+					<li><a href="?action=Plugin&type=IconView"><i class="material-icons">&#xE8F0;</i>Icon view</a></li>
+				</ul>
+			</div>
+			<div id="icon" class="noselect">
+				#if($display_upper)
+				<i id="nav_back" class="material-icons" onclick="location.href='../';">&#xE5C4;</i>
+				#end
+				<i id="nav_menu" class="material-icons" onclick="ToggleMenu();">&#xE5D2;</i>
+				<i id="nav_mp3p" class="material-icons" onclick="PlayAudio(event,'Show');">&#xE3A1;</i>
+				<i id="nav_prev" class="material-icons" title="이전곡" onclick="PlayAudio(event,'NavIcon','PREV');">&#xE045;</i>
+				<i id="nav_play" class="material-icons" title="재생" onclick="PlayAudio(event,'Play');">&#xE037;</i>
+				<i id="nav_next" class="material-icons" title="다음곡" onclick="PlayAudio(event,'NavIcon','NEXT');">&#xE044;</i>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div id="article">
+		<div class="main width">
+			#if($content)
+			<div class="error">
+				<b>$content</b>
+				<br />
+				이 상태가 계속되면 관리자에게 문의하세요.
+				#if($content_hide_back_button)
+				#else
+				<br /><br />
+				<a href="/">[처음으로]</a>
+				#end
+			</div>
+			#end
+
+			#if($show_files)
+			<div id="pluginWrap">
+				<ul id="button">
+					<li>&nbsp;<b>Plugins</b>&nbsp;</li>
+				</ul>
+				<ul id="plugin">
+					<li onclick="onPlugin('PlayList.asx');">ASX</li>
+					<li onclick="onPlugin('ZIPdownload');">ZIP</li>
+					<li onclick="onPlugin('RARdownload');">RAR &nbsp;</li>
+				</ul>
+				<div class="clear"></div>
+			</div>
+			<div class="clear"></div>
+
+			<!-- Main List -->
+			<iframe id="pluginProcess" name="process" width="0" height="0"></iframe>
+			<form id="pluginForm" method="post" target="process"><input type="hidden" name="selectedFiles"><input type="hidden" name="newname"></form>
+			<form id="mkDir" method="get" action="."><input type="hidden" name="action" value="MakeDirectory"><input type="hidden" name="name"></form>
+			<form id="mainForm">
+			<table id="mainTable">
+				<thead>
+					<tr class="noselect">
+						<th class="checkbox"><input type="checkbox" name="selectAllCheckbox" onclick="ToggleSelectAll();" /></th>
+						<th class="name">File Name</th>
+						<th class="size">Size</th>
+						<th class="date">Date</th>
+						<th class="address">&nbsp;</th>
+					</tr>
+				</thead>
+				<tbody>
+				#foreach($files)
+					#if($is_folder)
+					<!-- Folder loop -->
+					<tr id="tr#$link" class="folder">
+						<td class="checkbox"><input type="checkbox" name="chkbox[]" value="$link" onclick="HighlightRow('tr#$link',this.checked);" /></td>
+						<td class="name folder" onclick="location.href='$link';"><a href="$link">$name</a><div class="prop folder">&lt;DIR&gt; &nbsp; | &nbsp; $date</div></td>
+						<td class="size folder">-</td>
+						<td class="date">$date</td>
+						<td class="address"><a href="$link" onclick="return copy_fileAddress(this.href);"><img src="/$skin/images/lnk_folder.png?action=SkinFile" width="16" height="16" alt="Directory" /></a></td>
+					</tr>
+					#else
+					<!-- File loop -->
+					<tr id="tr#$link">
+						<td class="checkbox"><input type="checkbox" name="chkbox[]" value="$link" onclick="HighlightRow('tr#$link',this.checked);" /></td>
+						<td class="name file"><a href="$link" target="_blank" download>$name</a><div class="prop file">$size &nbsp; | &nbsp; $date</div></td>
+						<td class="size file">$size</td>
+						<td class="date">$date</td>
+						<td class="address"><a href="$link" onclick="return copy_fileAddress(this.href);"><img src="/$skin/images/lnk_file.png?action=SkinFile" width="16" height="16" alt="File" /></a></td>
+					</tr>
+					#end
+				#end
+
+				#if($files)
+				#else
+					<tr>
+						<td colspan="5" class="empty">이 폴더는 비어 있습니다.</td>
+					</tr>
+				#end
+				</tbody>
+			</table>
+			</form>
+			#end
+
+			<!-- Location -->
+			#if($address)
+			<div id="location">&nbsp;</div>
+			#end
+		</div>
+	</div>
+	<div id="footer">
+		<div class="inner-wrap width">
+			<span onclick="show_skinInfo();"><b>Berryz WebShare</b> v$version (rev.$revision)</span>
+		</div>
+	</div>
+</div>
+
+<div id="ivWrap" class="noselect">
+	<img id="iv_load" src="/$skin/images/iv_loading.gif?action=SkinFile" alt="" onclick="ViewImage(event,'Close');" />
+</div>
+
+<div id="vpWrap" class="noselect">
+	<div class="vp_header">
+		<h1>
+			<span id="vp_title" class="text-cut">Video Player</span>
+			<span id="vp_button">
+				<i id="vp_toggle" class="material-icons">&#xE5CF;</i>
+				<i class="material-icons" title="닫기" onclick="PlayVideo(event,'Close');">&#xE5CD;</i>
+			</span>
+		</h1>
+	</div>
+	<video id="vp_core" poster="/$skin/images/vp_bg.png?action=SkinFile" controls></video>
+</div>
+
+<div id="mpWrap" class="noselect">
+	<audio id="mp_core"></audio>
+	<span id="mp_title" class="text-cut">Music Player</span>
+	<i id="mp_cvol" class="material-icons" title="음량 조절" onclick="PlayAudio(event,'Volume');">&#xE050;</i>
+	<i id="mp_loop" class="material-icons" title="현재곡 반복" onclick="PlayAudio(event,'Repeat');">&#xE041;</i>
+	<i id="mp_prev" class="material-icons" title="이전곡" onclick="PlayAudio(event,'Play');">&#xE045;</i>
+	<i id="mp_play" class="material-icons" title="재생" onclick="PlayAudio(event,'Play');">&#xE038;</i>
+	<i id="mp_next" class="material-icons" title="다음곡" onclick="PlayAudio(event,'Play');">&#xE044;</i>
+	<i id="mp_rand" class="material-icons" title="순차/셔플 재생" onclick="PlayAudio(event,'Shuffle');">&#xE043;</i>
+	<i id="mp_list" class="material-icons" title="재생 목록" onclick="PlayAudio(event,'List');">&#xE03D;</i>
+	<i id="mp_hide" class="material-icons" title="플레이어 닫기" onclick="PlayAudio(event,'Hide');">&#xE5CD;</i>
+	<span id="mp_idx">-/-</span>
+	<span id="mp_time">--:--/--:--</span>
+</div>
+
+<!--[If gte IE 9]><!--><script type="text/javascript" src="/$skin/js/jquery-3.2.1.min.js?action=SkinFile"></script><!--<![EndIf]-->
+<!--[If lte IE 8]><script type="text/javascript" src="/$skin/js/jquery-1.12.4.min.js?action=SkinFile"></script><![EndIf]-->
+<script type="text/javascript" src="/$skin/js/global.js?action=SkinFile"></script>
+<script type="text/javascript" src="/$skin/js/sortable.js?action=SkinFile"></script>
+<script type="text/javascript">
+var mainST = new SortableTable(document.getElementById("mainTable"), ["None","CaseInsensitiveString","Number","InvertTime","None"]);
+
+write_splitDirs("$address");
+write_assLayers("$skin");
+</script>
+
+</body>
+</html>
+<!-- version 2.3 -->
+<!-- icon by famfamfam.com -->
+
+<!-- skin modified by Noah (based on http://wallel.tistory.com/140) -->
+<!-- loading icon from preloaders.net / arrow icons from iconsdb.com -->

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<title>YONAS</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="ViewPort" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="Robots" content="noindex, nofollow" />
+<link rel="Shortcut Icon" type="image/x-icon"  href="/?action=PluginResource&type=IconView&file=favicon.ico" />
+<link rel="StyleSheet" type="text/css" media="all" href="//fonts.googleapis.com/icon?family=Material+Icons" />
+<link rel="StyleSheet" type="text/css" media="all" href="/?action=PluginResource&type=IconView&file=global.css" />
+<link rel="Stylesheet" href="/?action=PluginResource&type=IconView&file=plyr.css">
+</head>
+
+<body>
+
+<div id="loading"><!--[If gte IE 9]><!--><i class="material-icons">&#xE863;</i><!--<![EndIf]--></div>
+
+<script src="/?action=PluginResource&type=IconView&file=plyr.js"></script>
+
+
+<div id="wrap">
+	<div id="header">
+		<div class="inner-wrap width">
+			<div id="logo">
+				<!--h1 class="text-cut"-->
+				<h1>
+					<a href="/?action=Plugin&type=IconView">YONAS</a>&nbsp;
+					<span onclick="scrollTo(0,0);">Yosika's Network Attached Storage</span>
+				</h1>
+			</div>
+			<div id="nav" onclick="ToggleMenu();">
+				<div>{ &nbsp; side menu &nbsp; }</div>
+				<ul>
+					#if($current_login_id)
+					<li><a href="/?action=Logout" title="$current_login_id"><i class="material-icons">&#xE899;</i>Logout</a></li>
+					#else
+					<li><a href="?action=Login"><i class="material-icons">&#xE0DA;</i>Login</a></li>
+					#end
+					<li onclick="ToggleSelectAll();return false;"><a id="selectAll-T" href="#selectAll"><i class="material-icons">&#xE162;</i>Select All</a></li>
+					<li onclick="location.reload();return false;"><a href="#refreshPage"><i class="material-icons">&#xE5D5;</i>Refresh</a></li>
+					<li><a href="./"><i class="material-icons">&#xE8EF;</i>Detail view</a></li>
+				</ul>
+			</div>
+			<div id="icon">
+				#if($server_path)
+				<i id="nav_back" class="material-icons" onclick="location.href='../?action=Plugin&type=IconView';">&#xE5C4;</i>
+				#end
+				<i id="nav_menu" class="material-icons" onclick="ToggleMenu();">&#xE5D2;</i>
+				<i id="nav_mp3p" class="material-icons" onclick="PlayAudio(event,'Show');">&#xE3A1;</i>
+				<i id="nav_prev" class="material-icons" title="이전곡" onclick="PlayAudio(event,'NavIcon','PREV');">&#xE045;</i>
+				<i id="nav_play" class="material-icons" title="재생" onclick="PlayAudio(event,'Play');">&#xE037;</i>
+				<i id="nav_next" class="material-icons" title="다음곡" onclick="PlayAudio(event,'NavIcon','NEXT');">&#xE044;</i>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div id="article">
+		<div class="main width">
+			<!--div id="pluginWrap">
+				<ul id="button">
+					<li>&nbsp;<b>Plugins</b>&nbsp;</li>
+				</ul>
+				<ul id="plugin">
+					<li onclick="onPlugin('PlayList.asx');">ASX</li>
+					<li onclick="onPlugin('ZIPdownload');">ZIP</li>
+					<li onclick="onPlugin('RARdownload');">RAR &nbsp;</li>
+				</ul>
+				<div class="clear"></div>
+			</div-->
+			<div class="clear"></div>
+
+			<form id="pluginForm" method="post"><input type="hidden" name="selectedFiles"></form>
+			<form id="mainForm">
+			<div class="inner-main width">
+				<div id="main">
+					<!-- Main List -->
+					<div class="init">항목 로드 중...</div>
+				</div>
+				<div class="clear"></div>
+			</div>
+			</form>
+
+			<div id="location">&nbsp;</div>
+		</div>
+	</div>
+	<div id="footer">
+		<div class="inner-wrap width">
+			<span onclick="show_skinInfo();"><b>YONAS_Berryz WebShare</b> v0.952 (rev.1187) / v0.1</span>
+		</div>
+	</div>
+</div>
+
+<div id="XCmenu">
+	<ul>
+		<li class="item" id="selectAll-C" onclick="ToggleSelectAll();">Select All</li>
+		<li class="cdiv"></li>
+		<li class="item" onclick="setTimeout(function(){onPlugin('PlayList.asx');},1);">ASX Streaming</li>
+		<li class="item" onclick="setTimeout(function(){onPlugin('ZIPdownload');},1);">ZIP Download</li>
+		<li class="item" onclick="setTimeout(function(){onPlugin('RARdownload');},1);">RAR Download</li>
+		<li class="cdiv"></li>
+		<li class="item" onclick="setTimeout(function(){location.replace('./');},1);">Detail View</li>
+		<li class="item" onclick="setTimeout(function(){location.reload();},1);">Refresh</li>
+		<li class="cdiv"></li>
+		<li class="item" onclick="setTimeout(function(){show_skinInfo();},1);"><span class="gray">IconView [Berryz WebShare]</span></li>
+	</ul>
+</div>
+
+<div id="ivWrap">
+	<img id="iv_load" src="/?action=PluginResource&type=IconView&file=iv_loading.gif" alt="" onclick="ViewImage(event,'Close');" />
+</div>
+
+<div id="vpWrap">
+	<div class="vp_header">
+		<h1>
+			<!--span id="vp_title" class="text-cut">영상 재생</span-->
+			<span id="vp_button">
+				<i id="vp_toggle" class="material-icons">&#xE5CF;</i>
+				<i class="material-icons" title="닫기" onclick="PlayVideo(event,'Close');">&#xE5CD;</i>
+			</span>
+		</h1>
+	</div>
+	<video id="vp_core" loop = "loop" data-plyr='{ disableContextMenu: false }' controls></video>
+	<script>plyr.setup();</script>
+</div>
+
+<div id="mpWrap">
+	<audio id="mp_core"></audio>
+	<span id="mp_title" class="text-cut">Music Player</span>
+	<i id="mp_cvol" class="material-icons" title="음량 조절" onclick="PlayAudio(event,'Volume');">&#xE050;</i>
+	<i id="mp_loop" class="material-icons" title="현재곡 반복" onclick="PlayAudio(event,'Repeat');">&#xE041;</i>
+	<i id="mp_prev" class="material-icons" title="이전곡" onclick="PlayAudio(event,'Play');">&#xE045;</i>
+	<i id="mp_play" class="material-icons" title="재생" onclick="PlayAudio(event,'Play');">&#xE038;</i>
+	<i id="mp_next" class="material-icons" title="다음곡" onclick="PlayAudio(event,'Play');">&#xE044;</i>
+	<i id="mp_rand" class="material-icons" title="순차/셔플 재생" onclick="PlayAudio(event,'Shuffle');">&#xE043;</i>
+	<i id="mp_list" class="material-icons" title="재생 목록" onclick="PlayAudio(event,'List');">&#xE03D;</i>
+	<i id="mp_hide" class="material-icons" title="플레이어 닫기" onclick="PlayAudio(event,'Hide');">&#xE5CD;</i>
+	<span id="mp_idx">-/-</span>
+	<span id="mp_time">--:--/--:--</span>
+</div>
+
+<!--[If gte IE 9]><!--><script type="text/javascript" src="/?action=PluginResource&type=IconView&file=jquery-3.2.1.min.js"></script><!--<![EndIf]-->
+<!--[If lte IE 8]><script type="text/javascript" src="/?action=PluginResource&type=IconView&file=jquery-1.12.4.min.js"></script><![EndIf]-->
+<script type="text/javascript" src="/?action=PluginResource&type=IconView&file=global.js"></script>
+<script type="text/javascript">
+var noah_useThumb = 1; // 이미지 파일에 썸네일 표시 여부 (1: 표시, 0: 표시 안함)
+
+// 디렉터리
+var dirArray = [], dirCount = 0;
+#foreach($dirs)
+dirArray[dirCount] = ["$name", "$link/"];
+dirCount++;
+#end
+
+// 파일
+var fileArray = [], fileCount = 0;
+#foreach($files)
+fileArray[fileCount] = ["$name", "$link"];
+fileCount++;
+#end
+
+write_listMain();
+write_splitDirs("/$server_path");
+write_assLayers();
+</script>
+
+</body>
+</html>
+<!-- created by Noah (skin based on http://wallel.tistory.com/140) -->
+<!-- file icons from Microsoft(R) Windows 10 / loading icon from preloaders.net / arrow icons from iconsdb.com -->

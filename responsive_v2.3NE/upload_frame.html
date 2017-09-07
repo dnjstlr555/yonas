@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<title>Berryz WebShare</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="ViewPort" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<style type="text/css">
+* { font-family: "Segoe UI", "Meiryo UI", "Malgun Gothic", "Arial", "Dotum", "AppleGothic", "Sans-Serif"; }
+
+html, body { width: 100%; height: 100%; margin: 0; padding: 0; font-size: 12px; line-height: 100%; }
+body { background: #f1f1f1; cursor: default; }
+
+a { color: #000; text-decoration: none; }
+a:hover { color: #888; text-decoration: none; }
+
+img { border: none; }
+form { margin: 0; padding: 0; }
+div, span { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+
+input { padding: 3px; font-size: 12px; cursor: pointer; }
+input.text { float: left; width: 70%; height: 23px; color: #999; }
+input.button { float: right; width: 76px; height: 23px; }
+
+#wrap { width: 100%; height: 100%; }
+
+#header { background: #333; border-bottom: 2px solid #2a2a2a; padding: 10px; text-shadow: 1px 1px #222; box-shadow: 0 0 10px #2a2a2a; }
+#header h1 { color: #eee; margin: 0; padding: 0; font-size: 16px; }
+#header h1 span { font-size: 12px; font-weight: normal; }
+
+#article { margin-top: 20px; }
+
+#uploadPath, #uploadForm, #statusText { padding: 0 10px 10px; }
+#uploadPath { white-space: nowrap; word-break: break-all; text-overflow: ellipsis; overflow: hidden; }
+
+#statusText { line-height: 18px; }
+
+#statusProgress { margin: 5px 10px 5px; }
+#statusProgress #pbar_back { width: 100%; height: 12px; background: #fff; border: 1px solid #000; }
+#statusProgress #pbar_fore { width: 0;    height: 100%; background: #69f; border: 4px solid #fff; }
+
+#statusStream { position: fixed; left: 0; bottom: 0; width: 0; height: 0; }
+
+#footer { position: fixed; bottom: 0; width: 100%; background-color: #fff; border-top: 1px solid #000; clear: both; }
+#footer #uploadList { float: left; padding: 7px 8px 0; font-size: 18px; }
+#footer #uploadExit { float: right; }
+#footer .queue { cursor: pointer; }
+#footer .close { width: 80px; height: 28px; color: #eee; background-color: #000; border: 1px solid #000; }
+</style>
+</head>
+
+<body onbeforeunload="return onClose();">
+
+<div id="wrap">
+	<div id="header">
+		<h1>File Upload &nbsp;<span>to My Server</span></h1>
+	</div>
+	<div id="article">
+		<div id="uploadPath"></div>
+		<div id="uploadForm"></div>
+		<div id="statusText"></div>
+		<div id="statusProgress"></div>
+		<div id="statusStream"></div>
+	</div>
+	<div id="footer">
+		<div id="uploadList"></div>
+		<div id="uploadExit"><input type="button" value="Close" class="close" onclick="window.close();" /></div>
+	</div>
+</div>
+
+<script type="text/javascript">
+var urlPath   = document.URL.split("?action=SkinFile#path=")[1];
+var plainPath = decodeURIComponent(urlPath);
+var errCount  = 0;
+
+if(!window.opener || opener.document.domain != document.domain)
+{
+	alert("올바르지 않은 접근입니다.");
+	top.close();
+	location.replace("about:blank");
+}
+
+document.getElementById("uploadPath").innerHTML = "<b>To :</b> <span title=\"" + plainPath + "\">" + plainPath + "</span>";
+document.getElementById("uploadForm").innerHTML = "<iframe id='uploadFrame' src='upload_form.html?action=SkinFile#path=" + urlPath + "' width='100%' height='30' frameborder='0' scrolling='no'></iframe>";
+
+// 업로드 준비
+function onBeginUpload(fn, key)
+{
+	document.getElementById("uploadForm").style.display = "none";
+	document.getElementById("statusText").style.display = "block";
+	document.getElementById("statusProgress").style.display = "block";
+
+	document.getElementById("uploadList").innerHTML = "";
+	document.getElementById("statusStream").innerHTML = "<iframe src='?action=UploadStatus&key=" + key + "' frameborder='0' scrolling='no'></iframe>";
+}
+
+// 업로드 프로세스
+function onUpdateUpload(text, percentage)
+{
+	var statusTxt = document.getElementById("statusText");
+	var alertMsg  = "";
+
+	var limit = 0; // 업로드 용량 제한 (메가바이트 단위, 0: 무제한)
+	var fsize = parseInt(text.substring(text.indexOf(" KB /")+6, text.indexOf(" KB &nbsp;")).replace(/,/gi, ""));
+
+	if(fsize != "NaN")
+	{
+		if(limit && (fsize > limit*1024))
+		{
+			document.getElementById("uploadFrame").contentWindow.location.reload();
+			text = "<b>! 오류</b><br /><span style='color:#f00;'>업로드 제한 용량 초과</span>";
+			alertMsg = "업로드하려는 용량이 " + limit + "MB를 초과할 수 없습니다.";
+		}
+	}
+
+	if(text.indexOf(">[확인]<") != -1) alertMsg = "파일 업로드가 완료되었습니다.";
+	else if(text.indexOf("업로드가 실패했습니다.") != -1) alertMsg = "파일 업로드에 실패했습니다.";
+
+	statusTxt.innerHTML = text;
+
+	if(alertMsg && !errCount)
+	{
+		setTimeout(function()
+		{
+			errCount++;
+
+			window.focus();
+			alert(alertMsg);
+
+			if(opener) opener.location.reload();
+			window.close();
+		}, 1);
+	}
+}
+
+// 업로드 진행바 갱신
+function onUpdateProgress(percentage)
+{
+	document.getElementById("statusProgress").innerHTML = "<div id='pbar_back'><div id='pbar_fore' style='width:" + Math.round(percentage) + "%;'></div></div>";
+}
+
+// 창 닫기
+function onClose()
+{
+	var resultStr = /(>업로드 제한 용량 초과<|>\[확인\]<|업로드가 실패했습니다\.)/;
+	var statusTxt = document.getElementById("statusText");
+
+	if(document.getElementById("uploadForm").style.display == "none" && !resultStr.test(statusTxt.innerHTML))
+	{
+		return "\n현재 파일 업로드가 진행 중입니다.\n\n업로드를 취소하고 창을 닫으시겠습니까?\n\n";
+	}
+}
+</script>
+
+</body>
+</html>
