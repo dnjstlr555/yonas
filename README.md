@@ -1,5 +1,5 @@
 # YONAS
-Custom skin of Berryz WebShare
+a Custom skin of Berryz WebShare
 
 # Video
 https://www.youtube.com/watch?v=D-BeGApOAH8
