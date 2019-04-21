@@ -1,10 +1,5 @@
-# yonas
-Personal Web Cloud/NAS Project using WebShare Berryz
-
-# Usage
-**Do not use it for commercial purposes**  <br>
-**USE ONLY PERSONAL PURPOSE OR USAGE**
-
+# YONAS
+Custom skin of Berryz WebShare
 
 # Video
 https://www.youtube.com/watch?v=D-BeGApOAH8
