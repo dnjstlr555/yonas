@@ -8,8 +8,6 @@ https://www.youtube.com/watch?v=D-BeGApOAH8
 > Copyright (C) 2009 Rica (http://ricanet.com)             : 플러그인 모듈 제작 <br>
 Copyright (C) 2015 wallel (http://wallel.com)            : 스킨 원작 <br>
 Copyright (C) 2015-2017 Noah (http://noah4u.tistory.com) : 스킨 이식/개작 및 배포 <br>
-Copyright (C) 2017 Yosika (http://ssplas.blog.me) : 스킨 2차 개작 <br>
-
 
 File icon by Kidiladon https://thenounproject.com/search/?q=file&i=1015143 
 
